@@ -232,18 +232,32 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			var result = null;
 			
-			if (mouseEnabled) {
-				
-				result = nmeChildren[l - i].nmeGetObjectUnderPoint(point);
-				
-			}
+			result = nmeChildren[l - i].nmeGetObjectUnderPoint(point);
 			
 			if (result != null) {
 				
-				return mouseChildren ? result : this;
+				if ( mouseChildren ) {
+					// if the child is an InteractiveObject return it
+					// else return this if mouseEnabled is true.
+					try {
+						cast( result, InteractiveObject );
+
+					} catch ( e:Dynamic ) {
+
+						return mouseEnabled ? this : null;
+					}
+					
+					return result;
 				
-			}
-			
+				} else if ( mouseEnabled ) {
+
+					return this;
+
+				} else {
+
+					return null;
+				}
+			}			
 		}
 		
 		return super.nmeGetObjectUnderPoint(point);
